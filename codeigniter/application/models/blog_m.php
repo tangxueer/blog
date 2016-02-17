@@ -23,22 +23,29 @@ class Blog_m extends CI_Model
 		$this->db->where('cid',$id);
 		$this->db->update('content',$arr);
 	}
-	
+
+/*删除一篇博客*/	
 	function delete($id)
 	{
 		$this->db->where('cid',$id);
 		$this->db->delete('content');
 	}
-	
+
+/*查看一篇博客*/	
 	function select($id)
-	{
+	{	
+		/*更新点击数*/
+		$this->db->where('cid',$id);
+		$this->db->set('hit','hit+1',FALSE);	
+		$this->db->update('content');
+		
 		$this->db->where('cid',$id);
 		$this->db->select('*');
 		$query=$this->db->get('content');
-		return $query->result_array();
+		return $query->row_array();
 	}
 	
-		
+	
 	function select_all()
 	{
 		$this->db->select('*');
