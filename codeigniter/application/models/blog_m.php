@@ -63,5 +63,7 @@ class Blog_m extends CI_Model
 		$query=$this->db->get('content');
 		return $query->result_array();
 	}
+	
+
 }
 ?>
