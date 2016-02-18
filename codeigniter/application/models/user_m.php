@@ -37,6 +37,20 @@ class User_m extends CI_Model
 		return $query->result();
 	}
 	
+	function user_select_name()
+	{
+		$this->db->select('uname');
+		$query=$this->db->get('user');
+		return $query->result_array();
+	}
+	
+	function user_select_id($id)
+	{
+		$this->db->where('uid',$id);
+		$this->db->select('uname');
+		$query=$this->db->get('user');
+		return $query->row_array();
+	}
 		
 	function user_select_all()
 	{
@@ -53,5 +67,6 @@ class User_m extends CI_Model
 		$query=$this->db->get('user');
 		return $query->result();
 	}
+
 }
 ?>

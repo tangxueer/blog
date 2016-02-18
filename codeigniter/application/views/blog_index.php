@@ -17,14 +17,13 @@
 </head>
 <body>
 <br><br>
-<a href="/codeigniter/index.php/blog_content_c/content_index" >发表一条新博客</a>
 
 <div class="login" >
-<a href="/codeigniter/index.php/blog_content_c/login" >登录</a>
-<a href="/codeigniter/index.php/blog_content_c/register" >注册</a>
 
+<?php if(!$session){?><a href="/codeigniter/index.php/blog_content_c/login" >登录</a><a href="/codeigniter/index.php/blog_content_c/register" >注册</a>
+<?php }else{echo "用户:".$uname['uname'];?><a href="/codeigniter/index.php/blog_content_c/user/<?php echo $session; ?>">个人中心</a><a href="/codeigniter/index.php/blog_content_c/loginout" >退出</a>
+<?php }?>
 
-<a href="/codeigniter/index.php/blog_content_c/loginout" >退出</a>
 </div>
 
 
@@ -33,12 +32,10 @@
 	
 
 </div>
-
-
-	<?php foreach($list as $item){?>	
-
+	<?php foreach($list as $item){?>
 <h2>
 <hr>
+
 	<a href=" <?php echo "/codeigniter/index.php/blog_content_c/view/".$item['cid']; ?>">
 	<?php echo $item['title'];?></a>
 
@@ -46,16 +43,17 @@
 
 <p>
 	<?php echo $item['date']."<br>";?>
-	<?php echo $item['hit']."<br>";?>
+阅读:<?php echo $item['hit']."<br>";?>
 
 </p>
-
 
 <div>	
 <hr>
 	<?php echo substr($item['content'],0,150)."<br>";
 	//一个中文字是一个英文字的三倍，所以第三个参数该是3的倍数，否则乱码
-	}?>
+	?>
+<?php }?>
+
 </div>
 
 <br><br>

@@ -1,4 +1,7 @@
 <?php
+/*
+如果博主想要自己发表一篇新博客，在url上写localhost/codeigniter/index.php/blog_content_c/content_index即可
+*/
 header("Content-Type: text/html;charset=utf-8");
 class Blog_content_c extends CI_Controller
 {
@@ -61,7 +64,14 @@ class Blog_content_c extends CI_Controller
 		$id=$id?$id:1;
 		$start=($id-1)*$pagenum;
 		$data['list']=$this->blog_m->select_limit($pagenum,$start);
-		$this->load->view('blog_index',$data);			
+		
+		/*登录后显示用户名与退出键*/
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$this->load->model('user_m');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
+	
+		$this->load->view('blog_index',$data);					
 	}
 	
 
@@ -71,17 +81,45 @@ class Blog_content_c extends CI_Controller
 		$this->load->model('blog_m');
 		$data['single']=$this->blog_m->select($id);		
 		
+		/*显示评论数*/
+		$this->load->model('comment_m');		
+		$data['comment_row']=$this->comment_m->comment_count_id($data['single']['cid']);
+		
+		
 		/*登录后才允许评论功能,验证用户是否已经登录*/
 		$this->load->library('session');
 		$data['session']=$this->session->userdata('uid');
 
 		
-		/*把用户评论存入后台数据库(没做完)*/
+		/*把用户评论存入后台数据库*/		
+		$this->load->model('user_m');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
+		$this->load->model('comment_m');
+		$arr=array('c_content'=>$_POST['comment'],'c_name'=>$data['uname']['uname'],'c_date'=>date("Y-m-d"),'c_id'=>$data['single']['cid']);	
+		if($_POST['submit'])
+		{
+			$result=$this->comment_m->comment_insert($arr);
+			$arow=$this->comment_m->affected_rows();
+			if($arow='1')
+			{
+				echo '
+				<script language="javascript"> 
+					alert("评论发表成功!"); 
+					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/view/'.$data['single']['cid'].'";
+				</script> ';   				
+			}else
+			{
+				echo '
+				<script language="javascript"> 
+					alert("评论发表失败!请重试"); 
+					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/view/'.$data['single']['cid'].'";
+				</script> ';   		
+			}
+		}
 		
-		/*$this->load->model('user_m');
-		$arr=array('');
-		$this->user_m->insert($arr);	
-		*/
+		/*显示此博客的所有评论*/
+		$data['allcomment']=$this->comment_m->comment_select_join($data['single']['cid']);
+		
 		
 		$this->load->view('blog_view',$data);		
 
@@ -109,10 +147,10 @@ class Blog_content_c extends CI_Controller
 	{
 		$this->load->view('blog_register');
 		
-		$this->load->model('user_m');		
-		$arr=array('uname'=>$_POST['uname'],'upass'=>$_POST['upass']);
+		$this->load->model('user_m');	
+		$arr=array('uname'=>$_POST['uname'],'upass'=>md5($_POST['upass']));		
 		if($_POST['submit'])
-		{
+		{					
 			$this->user_m->user_insert($arr);
 			$arow=$this->user_m->affected_rows();//影响条数
 			if($arow='1')
@@ -129,8 +167,8 @@ class Blog_content_c extends CI_Controller
 					alert("注册失败!请重试");
 					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/register";
 				</script> ';
-			}		
-		}
+			}											
+		}	
 	}
 	
 	/*用户登录前端页面*/
@@ -146,8 +184,8 @@ class Blog_content_c extends CI_Controller
 		if($_POST['submit'])
 		{
 			if($user)
-			{
-				if($user[0]->upass==$_POST['upass'])
+			{	
+				if($user[0]->upass==md5($_POST['upass']))
 				{
 					if($_POST['auto'])
 					{	//开启session			
@@ -160,13 +198,12 @@ class Blog_content_c extends CI_Controller
 						<script language="javascript">
 							alert("登录成功!");
 							window.location.href="http://localhost/codeigniter/index.php/blog_content_c/index";
-						</script> ';
-					
+						</script> ';				
 				}else
 				{
 					echo '
 						<script language="javascript">
-							alert("登录失败！请重试");
+							alert("密码不正确！请重试");
 							window.location.href="http://localhost/codeigniter/index.php/blog_content_c/login";
 						</script> ';
 				}
@@ -197,6 +234,41 @@ class Blog_content_c extends CI_Controller
 				}
 				window.location.href="http://localhost/codeigniter/index.php/blog_content_c/index";
 			</script> ';		
+	}
+	
+	/*用户个人中心*/
+	function user($id)
+	{
+
+		$this->load->library('session');
+		$data['uid']=$this->session->userdata('uid');
+		$id=$data['uid'];
+		$this->load->model('user_m');
+		$data['uname']=$this->user_m->user_select_id($id);	
+		$name=$data['uname']['uname'];
+		
+		/*上传头像(未完成)*/
+		
+		$config['upload_path']='D://wamp/wamp/www/codeigniter/application/views/upload_head';
+		$config['allowed_types']='jpg|png';
+		$config['max_size']='1024*1024';	
+		$config['file_name']=$name.$data['i'].'.jpg';
+
+		
+		$this->load->library('upload',$config);
+		if($this->upload->do_upload('userfile'))
+		{
+			++$data['i'];
+			$data=array('upload_data'=>$this->upload->data());
+			var_dump($data);
+		}else
+		{
+			$error=array('error'=>$this->upload->display_errors());
+			var_dump($error);
+		}
+		
+			
+		$this->load->view('blog_user',$data);
 	}
 	
 }
