@@ -8,19 +8,25 @@ class Blog_content_c extends CI_Controller
 	/*发布博客前端页面*/
 	function content_index()
 	{
-		$this->load->view('blog_content_v');					
+		$this->load->view('blog_content_v');				
 	}
 	/*发布博客后台数据库操作*/
 	function addcontent()
 	{
 		$this->load->model('blog_m');
-
+		$this->load->model('category_m');
 		$arr=array('title'=>$_POST['title'],'content'=>$_POST['content'],'date'=>date("Y-m-d"));
+		$ca_arr=array('caname'=>$_POST['category']);	
 		if($_POST['submit'])
 		{
-			$insert=$this->blog_m->insert($arr);
-			$arow=$this->blog_m->affected_rows();//影响条数
-			if($arow='1')
+			$this->blog_m->insert($arr);
+			
+			$allname=$this->category_m->category_select_name();
+			$this->category_m->category_insert($ca_arr);//为即将发布的博客增加分类				
+			
+			$arow=$this->blog_m->affected_rows();
+			$ca_arow=$this->category_m->affected_rows();
+			if($arow=='1'&&$ca_arow=='1')
 			{	//跳转至首页
 				echo '
 				<script language="javascript"> 
@@ -35,8 +41,7 @@ class Blog_content_c extends CI_Controller
 					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/content_index";
 				</script> ';
 			}
-		}
-				
+		}				
 	}
 	
 	
@@ -71,10 +76,24 @@ class Blog_content_c extends CI_Controller
 		$this->load->model('user_m');
 		$data['uname']=$this->user_m->user_select_id($data['session']);	
 	
+		/*博客分类目录(未完成)*/
+		$this->load->model('category_m');
+		$allname=$this->category_m->category_select_name();
+		
+		
 		$this->load->view('blog_index',$data);					
 	}
 	
-
+	/*根据分类浏览博客伪主页系统*/
+	/*
+	function category($id)
+	{
+		$this->load->model('category_m');
+		$data=$this->category_m->category_select_join($id);
+		var_dump($data);
+	}
+	*/
+	
 	/*博客具体内容页面*/
 	function view($id)
 	{
@@ -149,26 +168,62 @@ class Blog_content_c extends CI_Controller
 		
 		$this->load->model('user_m');	
 		$arr=array('uname'=>$_POST['uname'],'upass'=>md5($_POST['upass']));		
-		if($_POST['submit'])
-		{					
-			$this->user_m->user_insert($arr);
-			$arow=$this->user_m->affected_rows();//影响条数
-			if($arow='1')
-			{	//跳转至登录页面
-				echo '
-				<script language="javascript"> 
-					alert("注册成功!"); 
-					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/login"; 
-				</script> ';     
-			}else
-			{	//跳转至注册页面
-				echo '
+		
+		/*用ajax实现用户名不能重复问题（待解决）*/
+		$allname=$this->user_m->user_select_name();
+		foreach($allname as $name)
+		{
+		if(!in_array($_POST['uname'],$name))
+		{	
+			if($_POST['submit'])
+			{	
+				if($_POST['uname']!='')
+				{									
+					if($_POST['upass']!='')
+					{
+						$this->user_m->user_insert($arr);
+						$arow=$this->user_m->affected_rows();//影响条数
+						if($arow='1')
+						{	//跳转至登录页面
+							echo '
+								<script language="javascript"> 
+									alert("注册成功!"); 
+									window.location.href="http://localhost/codeigniter/index.php/blog_content_c/login"; 
+								</script> ';     
+						}else
+						{	//跳转至注册页面
+							echo '
+								<script language="javascript">
+									alert("注册失败!请重试");
+									window.location.href="http://localhost/codeigniter/index.php/blog_content_c/register";
+								</script> ';
+						}
+					}else
+					{
+						echo '
+							<script language="javascript">
+								alert("密码不能为空");
+								window.location.href="http://localhost/codeigniter/index.php/blog_content_c/register";
+							</script> ';
+					}
+				}else
+				{
+					echo '
+					<script language="javascript">
+						alert("用户名不能为空");
+						window.location.href="http://localhost/codeigniter/index.php/blog_content_c/register";
+					</script> ';
+				}
+			}	
+		}else
+		{
+			echo '
 				<script language="javascript">
-					alert("注册失败!请重试");
+					alert("该用户名已被注册，请重新输入");
 					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/register";
 				</script> ';
-			}											
-		}	
+		}
+		}
 	}
 	
 	/*用户登录前端页面*/
@@ -245,31 +300,118 @@ class Blog_content_c extends CI_Controller
 		$id=$data['uid'];
 		$this->load->model('user_m');
 		$data['uname']=$this->user_m->user_select_id($id);	
-		$name=$data['uname']['uname'];
+		$username=$data['uname']['uname'];
 		
 		/*上传头像(未完成)*/
 		
-		$config['upload_path']='D://wamp/wamp/www/codeigniter/application/views/upload_head';
-		$config['allowed_types']='jpg|png';
-		$config['max_size']='1024*1024';	
-		$config['file_name']=$name.$data['i'].'.jpg';
+		$config['upload_path']='./upload_head/';//相对index.php主入口文件
+		$config['allowed_types']='gif|jpg|png';
+		$config['max_size']='1024*1024';
+		$config['file_name']=$username.time();
 
 		
 		$this->load->library('upload',$config);
 		if($this->upload->do_upload('userfile'))
 		{
-			++$data['i'];
-			$data=array('upload_data'=>$this->upload->data());
-			var_dump($data);
+			$data['upload_data']=$this->upload->data();
+			var_dump($data['upload_data']);
+			$imgname=$data['upload_data']['file_name'];
+		
 		}else
 		{
-			$error=array('error'=>$this->upload->display_errors());
-			var_dump($error);
+			$error=$this->upload->display_errors();
+			echo $error;
 		}
 		
+		/*修改昵称*/			
+		
+		$data['lastnickname']=$this->user_m->user_select_nickname($id);
+		$arr=array('nickname'=>$_POST['nickname']);
+		if($_POST['sub_n'])
+		{
+			if($_POST['nickname']!=$data['lastnickname']['nickname'])
+			{
+				if(strlen($_POST['nickname'])<20)
+				{
+					$this->user_m->user_update($id,$arr);
+				}else
+				{
+					echo'
+					<script language="javascript">
+					alert("昵称太长，请重新输入");
+					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+					</script> ';
+				}
+			}else
+			{
+				echo'
+					<script language="javascript">
+					alert("修改的新昵称与原昵称相同！请重新输入");
+					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+					</script> ';
+			}
 			
+		}	
+		$data['nickname']=$this->user_m->user_select_nickname($id);
+		
+		/*更改密码*/
+		$oldpass=$this->user_m->user_select_pass($id);
+		$arr_p=array('upass'=>md5($_POST['newpass']));
+		if($_POST['sub_p'])
+		{
+			if(md5($_POST['oldpass'])==$oldpass['upass'])
+			{
+				if($_POST['newpass']==$_POST['newpassagain'])
+				{
+					if($_POST['newpass']!=$_POST['oldpass'])
+					{
+						if($_POST['newpass']!='')
+						{
+							$this->user_m->user_update($id,$arr_p);
+							$arow=$this->user_m->affected_rows();
+							if($arow=='1')
+							{
+								echo'
+								<script language="javascript">
+								alert("密码修改成功！");
+								window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+								</script> ';
+							}
+						}else
+						{
+							echo'
+								<script language="javascript">
+								alert("密码不能为空！");
+								window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+								</script> ';
+						}
+					}else
+					{
+						echo'
+						<script language="javascript">
+						alert("请不要把新密码设置为与原密码相同,请再次输入");
+						window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+						</script> ';
+					}
+				}else
+				{
+					echo'
+					<script language="javascript">
+					alert("新密码二次确认时有误，请再次输入");
+					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+					</script> ';	
+				}
+			}else
+			{
+				echo'
+				<script language="javascript">
+				alert("旧密码输入有误，请再次输入");
+				window.location.href="http://localhost/codeigniter/index.php/blog_content_c/user/'.$id.'";
+				</script> ';	
+			}
+		}	
 		$this->load->view('blog_user',$data);
 	}
-	
+
 }
 ?>
