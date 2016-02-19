@@ -18,6 +18,7 @@
 <body>
 <br><br>
 
+
 <div class="login" >
 
 <?php if(!$session){?><a href="/codeigniter/index.php/blog_content_c/login" >登录</a><a href="/codeigniter/index.php/blog_content_c/register" >注册</a>
@@ -29,8 +30,9 @@
 
 <div class="tag">
 	分类目录：<br>
-	
-
+	<?php foreach($ca_name as $caname){?>	
+	<?php echo $caname."<br>";?></a>
+	<?php } ?>
 </div>
 	<?php foreach($list as $item){?>
 <h2>

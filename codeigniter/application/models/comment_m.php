@@ -44,8 +44,6 @@ class Comment_m extends CI_Model
 		return $query->result();
 	}
 	
-	
-	/*在主页显示每条博客的评论数*/
 	function comment_select_num()
 	{
 		$this->db->select('c_id');
