@@ -17,14 +17,14 @@
 <input type="text" name="nickname" value="<?php echo $nickname['nickname'];?>" />
 <input type="submit" name="sub_n" value="修改昵称" />
 <br>
-
+<!--
 头像：<br><img src="localhost:8080/codeigniter/upload_head/caj1455859648.jpg" />
 <br>
 上传头像：<input type="file" name="userfile"/>
 <input type="submit" name="sub_i" value="上传头像" />
 <br>upload_head/<?php echo $upload_data['file_name'];?>
 <br>
-
+-->
 <br>
 
 更改密码：

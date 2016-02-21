@@ -64,6 +64,25 @@ class Blog_m extends CI_Model
 		return $query->result_array();
 	}
 	
-
+	function select_join($caname)
+	{
+		$this->db->where('ca_name',$caname);
+		$this->db->select('*');
+		$this->db->from('content');
+		$this->db->join('category','category.caname=content.ca_name');
+		$query=$this->db->get();
+		return $query->result_array();	
+	}
+	
+	function select_limit_join($caname,$num,$start)
+	{
+		$this->db->where('ca_name',$caname);
+		$this->db->select('*');
+		$this->db->order_by('date','DESC');
+		$this->db->limit($num,$start);
+		$this->db->join('category','category.caname=content.ca_name');
+		$query=$this->db->get('content');
+		return $query->result_array();
+	}
 }
 ?>

@@ -1,7 +1,7 @@
 <html>
 <head>
 <meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
-<title>博客主页</title>
+<title>博客分类页面</title>
 <style type="text/css">
 .tag
 {
@@ -16,8 +16,9 @@
 </style>
 </head>
 <body>
-<br><br>
 
+<a href="/codeigniter/index.php/blog_content_c/index" >返回首页</a>
+<br><br>
 
 <div class="login" >
 
@@ -48,7 +49,6 @@
 	<?php echo $item['date']."<br>";?>
 阅读:<?php echo $item['hit']."<br>";?>
 类别:<?php echo $item['ca_name']."<br>";?>
-
 </p>
 
 <div>	
