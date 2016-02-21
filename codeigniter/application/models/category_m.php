@@ -36,6 +36,13 @@ class Category_m extends CI_Model
 		return $query->result_array();
 	}
 	
+	function category_select_id($id)
+	{
+		$this->db->where('caid',$id);
+		$this->db->select('caname');
+		$query=$this->db->get('category');
+		return $query->row_array();
+	}
 	
 	function category_select_join($id)
 	{	
@@ -47,6 +54,20 @@ class Category_m extends CI_Model
 		return $query->result_array();		
 	}
 
+	function category_select_name($caname)
+	{
+		$this->db->where('caname',$caname);
+		$this->db->select('*');
+		$query=$this->db->get('category');
+		return $query->row_array();
+	}
+	
+	function category_select_allname()
+	{
+		$this->db->select('caname');
+		$query=$this->db->get('category');
+		return $query->result_array();
+	}
 		
 }
 ?>

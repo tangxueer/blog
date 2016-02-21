@@ -15,31 +15,32 @@ class Blog_content_c extends CI_Controller
 	{
 		$this->load->model('blog_m');
 		$this->load->model('category_m');
-		$arr=array('title'=>$_POST['title'],'content'=>$_POST['content'],'date'=>date("Y-m-d"));
+		$arr=array('title'=>$_POST['title'],'content'=>$_POST['content'],'date'=>date("Y-m-d"),'ca_name'=>$_POST['category']);
 		$ca_arr=array('caname'=>$_POST['category']);	
 		if($_POST['submit'])
 		{
 			$this->blog_m->insert($arr);
-			
-			$allname=$this->category_m->category_select_name();
-			$this->category_m->category_insert($ca_arr);//为即将发布的博客增加分类				
-			
+			$caname=$this->category_m->category_select_name($_POST['category']);
+			if(!is_array($caname))//为即将发布的博客增加新分类
+			{
+				$this->category_m->category_insert($ca_arr);				
+			}	
 			$arow=$this->blog_m->affected_rows();
 			$ca_arow=$this->category_m->affected_rows();
 			if($arow=='1'&&$ca_arow=='1')
 			{	//跳转至首页
 				echo '
-				<script language="javascript"> 
-					alert("发布成功!"); 
-					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/index"; 
-				</script> ';     
+					<script language="javascript"> 
+						alert("发布成功!"); 
+						window.location.href="http://localhost/codeigniter/index.php/blog_content_c/index"; 
+					</script> ';     
 			}else
 			{	//跳转至发布博客页面
 				echo '
-				<script language="javascript">
-					alert("发布失败!请重试");
-					window.location.href="http://localhost/codeigniter/index.php/blog_content_c/content_index";
-				</script> ';
+					<script language="javascript">
+						alert("发布失败!请重试");
+						window.location.href="http://localhost/codeigniter/index.php/blog_content_c/content_index";
+					</script> ';
 			}
 		}				
 	}
@@ -76,23 +77,53 @@ class Blog_content_c extends CI_Controller
 		$this->load->model('user_m');
 		$data['uname']=$this->user_m->user_select_id($data['session']);	
 	
-		/*博客分类目录(未完成)*/
+		/*博客分类目录*/
 		$this->load->model('category_m');
-		$allname=$this->category_m->category_select_name();
-		
+		$data['allcaname']=$this->category_m->category_select_allname();
 		
 		$this->load->view('blog_index',$data);					
 	}
 	
-	/*根据分类浏览博客伪主页系统*/
-	/*
-	function category($id)
+	/*显示此分类的所有博客*/
+
+	function category($caname,$id)
 	{
+		$this->load->model('blog_m');
 		$this->load->model('category_m');
-		$data=$this->category_m->category_select_join($id);
-		var_dump($data);
+		$ca_name=urldecode($caname);
+		$cablog=$this->blog_m->select_join($ca_name);
+		
+		/*分页系统*/
+		$pageall=count($cablog);
+		$pagenum=10;
+		$config['total_rows']=$pageall;
+		$config['per_page']=$pagenum;
+		$config['num_links']=3;
+		$config['base_url']="/codeigniter/index.php/blog_content_c/category/".$ca_name;
+		$config['use_page_numbers']=true;
+		
+		$this->load->library('pagination');
+		$this->pagination->initialize($config);
+		echo $this->pagination->create_links();
+		
+		echo "<br>";
+		
+		$id=$id?$id:1;
+		$start=($id-1)*$pagenum;
+		$data['list']=$this->blog_m->select_limit_join($ca_name,$pagenum,$start);
+		
+		/*登录后显示用户名与退出键*/
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$this->load->model('user_m');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
+	
+		/*博客分类目录*/
+		$data['allcaname']=$this->category_m->category_select_allname();
+		
+		$this->load->view('blog_category',$data);	
 	}
-	*/
+
 	
 	/*博客具体内容页面*/
 	function view($id)
@@ -108,7 +139,6 @@ class Blog_content_c extends CI_Controller
 		/*登录后才允许评论功能,验证用户是否已经登录*/
 		$this->load->library('session');
 		$data['session']=$this->session->userdata('uid');
-
 		
 		/*把用户评论存入后台数据库*/		
 		$this->load->model('user_m');
@@ -141,7 +171,6 @@ class Blog_content_c extends CI_Controller
 		
 		
 		$this->load->view('blog_view',$data);		
-
 		
 		/*删除博客处理*/
 		if($_POST['sub_del'])
@@ -157,7 +186,6 @@ class Blog_content_c extends CI_Controller
 				}
 			</script> ';
 		}
-
 	}
 	
 	
@@ -271,10 +299,8 @@ class Blog_content_c extends CI_Controller
 						</script> ';					
 			}	
 		}		
-
 	}
 	
-
 	/*用户退出登录*/
 	function loginout()
 	{
@@ -294,7 +320,6 @@ class Blog_content_c extends CI_Controller
 	/*用户个人中心*/
 	function user($id)
 	{
-
 		$this->load->library('session');
 		$data['uid']=$this->session->userdata('uid');
 		$id=$data['uid'];
@@ -308,7 +333,6 @@ class Blog_content_c extends CI_Controller
 		$config['allowed_types']='gif|jpg|png';
 		$config['max_size']='1024*1024';
 		$config['file_name']=$username.time();
-
 		
 		$this->load->library('upload',$config);
 		if($this->upload->do_upload('userfile'))
@@ -412,6 +436,5 @@ class Blog_content_c extends CI_Controller
 		}	
 		$this->load->view('blog_user',$data);
 	}
-
 }
 ?>
