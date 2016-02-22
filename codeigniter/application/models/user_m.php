@@ -29,20 +29,13 @@ class User_m extends CI_Model
 		$this->db->delete('user');
 	}
 	
-	function user_select($uname)
+	function user_select_name($uname)
 	{
 		$this->db->where('uname',$uname);
 		$this->db->select('*');
 		$query=$this->db->get('user');
-		return $query->result();
-	}
-	
-	function user_select_name()
-	{
-		$this->db->select('uname');
-		$query=$this->db->get('user');
-		return $query->result_array();
-	}
+		return $query->row_array();
+	}	
 	
 	function user_select_id($id)
 	{
@@ -51,14 +44,22 @@ class User_m extends CI_Model
 		$query=$this->db->get('user');
 		return $query->row_array();
 	}
-		
-	function user_select_all()
+	
+	function user_select_nickname($id)
 	{
-		$this->db->select('*');
+		$this->db->where('uid',$id);
+		$this->db->select('nickname');
 		$query=$this->db->get('user');
-		return $query->result();
+		return $query->row_array();
 	}
 	
+	function user_select_pass($id)
+	{
+		$this->db->where('uid',$id);
+		$this->db->select('upass');
+		$query=$this->db->get('user');
+		return $query->row_array();
+	}	
 		
 	function user_select_limit($num,$start)
 	{
@@ -66,6 +67,20 @@ class User_m extends CI_Model
 		$this->db->limit($num,$start);
 		$query=$this->db->get('user');
 		return $query->result();
+	}
+	
+	function user_select_allid()
+	{
+		$this->db->select('uid');
+		return $this->db->count_all_results('user');
+	}
+
+	function user_select_all()
+	{
+		$this->db->select('*');
+		$this->db->order_by('udate','DESC');
+		$query=$this->db->get('user');
+		return $query->result_array();
 	}
 
 }
