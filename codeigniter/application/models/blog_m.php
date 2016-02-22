@@ -23,15 +23,21 @@ class Blog_m extends CI_Model
 		$this->db->where('cid',$id);
 		$this->db->update('content',$arr);
 	}
-
-/*删除一篇博客*/	
+	
+	function update_comment_num($id)
+	{
+		/*更新评论数*/
+		$this->db->where('cid',$id);
+		$this->db->set('comment_num','comment_num+1',FALSE);	
+		$this->db->update('content');
+	}
+	
 	function delete($id)
 	{
 		$this->db->where('cid',$id);
 		$this->db->delete('content');
 	}
 
-/*查看一篇博客*/	
 	function select($id)
 	{	
 		/*更新点击数*/
@@ -54,6 +60,19 @@ class Blog_m extends CI_Model
 		return $query->result_array();
 	}
 	
+	function select_id($id)
+	{
+		$this->db->where('cid',$id);
+		$this->db->select('*');
+		$query=$this->db->get('content');
+		return $query->row_array();
+	}
+	
+	function select_allid()
+	{
+		$this->db->select('cid');
+		return $this->db->count_all_results('content');
+	}
 		
 	function select_limit($num,$start)
 	{

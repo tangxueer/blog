@@ -7,7 +7,7 @@ class Comment_m extends CI_Model
 		$this->db=$this->load->database('pdo://root:@127.0.0.1/blog?subdriver=mysql',TRUE);
 	}
 	
-	/*¼ÇÂ¼¸ÃÌõ²©¿ÍÏÂÆÀÂÛ×ÜÌõÊý*/
+	/*è®°å½•è¯¥æ¡åšå®¢ä¸‹è¯„è®ºæ€»æ¡æ•°*/
 	function comment_count_id($id)
 	{
 		$this->db->where('c_id',$id);
@@ -26,13 +26,13 @@ class Comment_m extends CI_Model
 		
 	function comment_update($id,$arr)
 	{
-		$this->db->where('uid',$id);
+		$this->db->where('id',$id);
 		$this->db->update('comment',$arr);
 	}
 	
 	function comment_delete($id)
 	{
-		$this->db->where('uid',$id);
+		$this->db->where('id',$id);
 		$this->db->delete('comment');
 	}
 	
@@ -69,6 +69,20 @@ class Comment_m extends CI_Model
 		return $query->result_array();		
 	}
 
+	function comment_select_allid()
+	{
+		$this->db->select('id');
+		return $this->db->count_all_results('comment');
+	}
 
+	function comment_select_all()
+	{
+		$this->db->select('*');
+		$this->db->order_by('c_date','DESC');
+		$query=$this->db->get('comment');
+		return $query->result_array();
+	}
+	
+	
 }
 ?>
