@@ -2,6 +2,11 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_view extends CI_Controller
 {	
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 	/*博客具体内容页面*/
 	function view($id)
 	{

@@ -2,6 +2,11 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_register extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 /*用户注册*/
 	function register()
 	{		

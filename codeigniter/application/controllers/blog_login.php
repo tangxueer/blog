@@ -2,6 +2,11 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_login extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 	/*用户登录前端页面*/
 	function login()
 	{
@@ -12,6 +17,13 @@ class Blog_login extends CI_Controller
 	{
 		$this->load->model('user_m');
 		$user=$this->user_m->user_select_name($_POST['uname']);
+		if($_POST['submit'])
+		{
+			echo "sucess";
+		}else
+		{
+			echo "failed";
+		}
 		if($_POST['submit'])
 		{
 			if($user)

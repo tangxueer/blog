@@ -1,0 +1,75 @@
+/*标准设定*/
+* {margin:0; padding:0;}
+body{
+  font-family:'Lanting';
+}
+/*字体*/
+/*方正兰亭纤黑简体*/
+@font-face{
+  font-family:'Lanting';
+  src: url('../fonts/lanting.TTF');
+}
+/*方正兰亭粗黑简体*/
+@font-face{
+  font-family:'LantingBlod';
+  src: url('../fonts/lanting_blod.TTF');
+}
+
+/*通用类*/
+.co-white{color:#FFFFFF;}
+.co-white:hover{color:#FFFFFF;}
+
+/*注册页面(blog_register_v)*/
+.green-back{background-color:#4ECAB2;}
+#register-main{
+	position:relative;
+	top:100%;
+}
+
+.register-title{
+	color:#FFFFFF;
+	font-size:150%;
+}
+.login-form{
+	width:80%;
+}
+[name="submit"]{
+	font-size:115%;
+}
+.login-link{
+	font-size:90%;
+}
+
+/*登陆页面(blog_login_v)*/
+.login-title{
+	color:#FFFFFF;
+	font-size:150%;
+}
+
+/*浏览博客(blog_view_v)*/
+.navtx{
+	display:none;
+}
+
+.view-submit{
+	position:relative;
+	top: 1%;
+}
+.view-data{
+
+}
+
+.nav-welcome{
+	margin:12px 8px;
+}
+
+.b-tag{
+	color:#FFFFFF;
+}
+.b-tag:hover{
+	color:#FFFFFF;
+}
+
+.nav-login{
+	margin:6px 8px;
+}

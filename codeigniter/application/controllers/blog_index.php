@@ -3,6 +3,11 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_index extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 	/*主页*/
 	function index($id)
 	{
@@ -24,9 +29,8 @@ class Blog_index extends CI_Controller
 		
 		$this->load->library('pagination');
 		$this->pagination->initialize($config);
-		echo $this->pagination->create_links();
-		
-		echo "<br>";
+		$this->pagination->create_links();
+
 		
 		$id=$id?$id:1;
 		$start=($id-1)*$pagenum;
