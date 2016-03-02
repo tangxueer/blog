@@ -2,12 +2,22 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_user extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 /*用户个人中心*/
 	function user($id)
 	{
+		
 		$this->load->model('user_m');
+
 		
 		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
+		
 		$data['uid']=$this->session->userdata('uid');
 		$id=$data['uid'];
 		

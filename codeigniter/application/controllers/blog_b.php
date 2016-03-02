@@ -2,9 +2,19 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_b extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 	/*管理博客页面*/
 	function b_blog()
 	{
+		$this->load->model('user_m');
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$data['name']=$this->user_m->user_select_id($data['session']);	
+		
 		$this->load->model('blog_m');
 		$data['allid']=$this->blog_m->select_allid();
 		$data['blog']=$this->blog_m->select_all();
@@ -58,6 +68,10 @@ class Blog_b extends CI_Controller
 	/*管理评论页面*/
 	function b_comment()
 	{
+		$this->load->model('user_m');
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
 		$this->load->model('comment_m');
 		$data['allid']=$this->comment_m->comment_select_allid();
 		$data['comment']=$this->comment_m->comment_select_all();
@@ -101,6 +115,10 @@ class Blog_b extends CI_Controller
 	/*管理用户页面*/
 	function b_user()
 	{
+		$this->load->model('user_m');		
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
 		$this->load->model('user_m');
 		$data['allid']=$this->user_m->user_select_allid();
 		$data['user']=$this->user_m->user_select_all();

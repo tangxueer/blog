@@ -2,10 +2,19 @@
 header("Content-Type: text/html;charset=utf-8");
 class Blog_content extends CI_Controller
 {
+	public function __construct()
+    {
+        parent::__construct();
+        $this->load->helper('url');
+    }
 	/*发布博客前端页面*/
 	function content_index()
 	{
-		$this->load->view('blog_content_v');				
+		$this->load->model('user_m');		
+		$this->load->library('session');
+		$data['session']=$this->session->userdata('uid');
+		$data['uname']=$this->user_m->user_select_id($data['session']);	
+		$this->load->view('blog_content_v',$data);				
 	}
 	/*发布博客后台数据库操作*/
 	function addcontent()
