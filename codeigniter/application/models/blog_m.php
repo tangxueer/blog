@@ -73,6 +73,8 @@ class Blog_m extends CI_Model
 		$this->db->select('cid');
 		return $this->db->count_all_results('content');
 	}
+	
+
 		
 	function select_limit($num,$start)
 	{

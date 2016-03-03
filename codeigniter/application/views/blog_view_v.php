@@ -100,7 +100,7 @@
 <textarea rows="5" cols="2" name="comment" class="form-control"></textarea> 
 </div>
 <br/>
-<button type="submit" name="submit" class="btn btn-primary view-submit">发表评论</button>
+<input class="btn btn-primary view-submit" name="submit" type="submit" value="发表评论" />
 </form>
 
 </div>

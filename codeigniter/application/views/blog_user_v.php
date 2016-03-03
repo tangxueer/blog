@@ -53,9 +53,10 @@
         </div>
       </nav>
      <!-- 导航栏 -->
-
-请先<a href="/codeigniter/index.php/blog_login/login" >登录</a>，登录后才能设置用户信息。
-
+	 
+<?php if(!$session){?>请先<a href="/codeigniter/index.php/blog_login/login" >登录</a>,登录后才能有效地更改用户信息。
+<?php }else{?>
+<br>
 <br>
 <p>用户名：<?php echo $uname['uname'];?></p>
 <form action="<?php echo "/codeigniter/index.php/blog_user/user/".$uid;?>" method="post" enctype="multipart/form-data">
@@ -85,6 +86,7 @@
 <span><label for="newpassagain">请再次输入新密码：<input type="password" class="form-control" name="newpassagain" id="newpassagain" /></label></span><br>
 <input class="btn btn-success" name="sub_p" type="submit" value="更改密码" />
 </div>
+<?php }?>
 </form>
 		<!--jquery2.1.4-->
 		<script type="text/javascript" src="<?php echo base_url("Public/js/jquery.min.js");?>"></script>
