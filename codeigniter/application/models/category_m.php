@@ -29,6 +29,12 @@ class Category_m extends CI_Model
 		$this->db->delete('category');
 	}
 	
+	function category_canamedelete($ca_name)
+	{
+		$this->db->where('caname',$ca_name);
+		$this->db->delete('category');
+	}
+	
 	function category_select()
 	{
 		$this->db->select('*');

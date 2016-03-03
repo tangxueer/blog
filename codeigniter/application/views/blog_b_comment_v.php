@@ -45,7 +45,7 @@
     <?php }else{?>          
               <div class="nav-login">
                 <ul class="nav navbar-nav navbar-right">              
-                  <?php echo "您好，:".$uname['uname'];?>
+                  <?php echo "您好，:".$name['uname'];?>
                 <button type="button" class="btn btn-success"><a href="/codeigniter/index.php/blog_loginout/loginout" class="co-white">退出</a></button>
                   </ul>
               </div>

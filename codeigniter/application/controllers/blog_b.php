@@ -27,7 +27,13 @@ class Blog_b extends CI_Controller
 		if($_POST['sub_del'])
 		{
 			$this->load->model('blog_m');
+			$name=$this->blog_m->select_id($id);
 			$this->blog_m->delete($id);
+			
+			$ca_name=$name['ca_name'];
+			$this->load->model('category_m');	
+			$this->category_m->category_canamedelete($ca_name);
+			
 			echo '
 			<script language="javascript">		
 				window.location.href="http://localhost/codeigniter/index.php/blog_b/b_blog";
@@ -71,7 +77,7 @@ class Blog_b extends CI_Controller
 		$this->load->model('user_m');
 		$this->load->library('session');
 		$data['session']=$this->session->userdata('uid');
-		$data['uname']=$this->user_m->user_select_id($data['session']);	
+		$data['name']=$this->user_m->user_select_id($data['session']);	
 		$this->load->model('comment_m');
 		$data['allid']=$this->comment_m->comment_select_allid();
 		$data['comment']=$this->comment_m->comment_select_all();
@@ -118,7 +124,7 @@ class Blog_b extends CI_Controller
 		$this->load->model('user_m');		
 		$this->load->library('session');
 		$data['session']=$this->session->userdata('uid');
-		$data['uname']=$this->user_m->user_select_id($data['session']);	
+		$data['name']=$this->user_m->user_select_id($data['session']);	
 		$this->load->model('user_m');
 		$data['allid']=$this->user_m->user_select_allid();
 		$data['user']=$this->user_m->user_select_all();

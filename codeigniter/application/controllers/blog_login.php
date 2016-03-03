@@ -19,13 +19,6 @@ class Blog_login extends CI_Controller
 		$user=$this->user_m->user_select_name($_POST['uname']);
 		if($_POST['submit'])
 		{
-			echo "sucess";
-		}else
-		{
-			echo "failed";
-		}
-		if($_POST['submit'])
-		{
 			if($user)
 			{	
 				if($user['upass']==md5($_POST['upass']))
